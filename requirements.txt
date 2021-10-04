@@ -1,0 +1,5 @@
+numpy == 1.18.1
+Django == 2.2.7
+gunicorn == 20.0.4
+sklearn == 0.0
+coverage==3.6
