@@ -17,6 +17,9 @@ jobs:
         python-version: 3.7
     - name: Generate Report
       run: |
+        pip install django
+        pip install djangorestframework
+        pip install sklearn
         pip install coverage
         coverage run -m unittest
     - name: Upload Coverage to Codecov
