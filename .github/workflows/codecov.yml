@@ -22,5 +22,9 @@ jobs:
         pip install sklearn
         pip install coverage
         coverage run manage.py test
-    - name: Upload Coverage to Codecov
-      uses: codecov/codecov-action@v1
+    # - name: Upload Coverage to Codecov
+    #   uses: codecov/codecov-action@v1
+    - name: Publish to coveralls.io
+      uses: coverallsapp/github-action@v1.1.2
+      with:
+        github-token: ${{ github.token }}

@@ -1,10 +1,10 @@
 from django.test import TestCase
-from learning_recommendation.api.views import index_page
+from rest_framework.test import APITestCase
+# import api
 # Create your tests here.
 
 
-class predictTestCase():
-
+class predictTestCase(APITestCase):
     def test_prediction_correct(self):
         data = {
             "resource_access": 77,
@@ -14,9 +14,7 @@ class predictTestCase():
             "raised_hands": 50
         }
         resp = self.client.post('/predict', data, format='json')
-        
         self.assertEqual(resp.status_code, 200)
 
-    def test_index_page(self):
-        index = index_page({'test': 'testEP'})
-        
+
+
