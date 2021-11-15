@@ -16,4 +16,27 @@ The features used in the situation are the following: -
 - Discussion (The number of times a student asks questions using a discussions feature / Class Forum feature engaging with fellow classmates)
 
 
+### Installation
+
+To use the module locally run the following commands.
+
+        git clone https://github.com/Angaza-Elimu/learning_recommendation
+
+from there change directory to the repository's folder.
+
+        cd learning_recommendation
+
+and install the application dependencies from the requirements file.
+
+        pip install -r requirements.txt
+
+afterwards you may run the database migrations.
+
+        python3 manage.py migrate
+
+then run the server with the following command.
+
+        python3 manage.py runserver
+
+
 Licensed under LGPL 3.0
