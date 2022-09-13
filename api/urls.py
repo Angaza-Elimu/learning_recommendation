@@ -1,5 +1,5 @@
 from django.urls import path
-from learning_recommendation.api import views
+from api import views
 
 urlpatterns = [
     path('',views.index_page),

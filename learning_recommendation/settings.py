@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'coverage',
-    'learning_recommendation.api'
+    'api'
     
 ]
 
