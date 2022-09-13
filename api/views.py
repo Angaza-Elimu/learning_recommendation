@@ -18,7 +18,7 @@ def index_page(request):
     return Response(return_data)
 
 @api_view(['POST'])
-def classify_student(request):
+def classify_student_v1(request):
     try: 
         resource_access = request.data.get('resource_access',None)
         announcements_view = request.data.get('announcements_view', None)
@@ -61,7 +61,35 @@ def classify_student(request):
     
     return Response(predictions)
 
+@api_view(['POST'])
+def diagnostic_recommendation(request):
+    #Open our model 
+    model = pickle.load(open('diagnostic_test_recommendation.pkl','rb'))
+    #obtain all form values and place them in an array, convert into integers
+    int_features = [int(x) for x in request.form.values()]
+    #Combine them all into a final numpy array
+    final_features = [np.array(int_features)]
+    #predict the price given the values inputted by user
+    prediction = model.predict(final_features)
+    
+    
+    output = prediction[0]
+
+
+    predictions = {
+                    'error' : '0',
+                    'message' : 'Successful',
+                    'prediction' : output,
+                    'scaled': scaled_value
+                  }
+
+    return predictions
+    
+            
 
 def testPredictionCorrect(self):
     resp = self.api_client.get('/predict', format='json')
     self.assertValidJSONResponse(resp)
+
+
+#Set a post method to yield predictions on page
