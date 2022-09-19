@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'coverage',
     'api'
-    
+
 ]
 
 MIDDLEWARE = [
@@ -80,8 +80,14 @@ WSGI_APPLICATION = 'learning_recommendation.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'stage_2',
+        'USER': 'root',
+        'PASSWORD': '12345678',
+        'HOST': '127.0.0.1',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
 

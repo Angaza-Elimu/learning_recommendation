@@ -12,8 +12,9 @@ quiz_data = pd.read_csv("recommendations.csv")
 
 # Store features matrix in X
 X= quiz_data.iloc[:, 10:11].values
-#Store target vector in 
+#Store target vector in
 y= quiz_data.iloc[:, 12].values
+
 
 # Splitting data into training and testing data
 
@@ -48,5 +49,3 @@ from sklearn.metrics import accuracy_score
 print(accuracy_score(y_test, predictions))
 
 pickle.dump(clf, open('diagnostic_test_recommendation.pkl', 'wb'))
-
- 

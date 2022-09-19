@@ -46,5 +46,3 @@ from sklearn.metrics import accuracy_score
 print(accuracy_score(y_test, predictions))
 
 pickle.dump(clf, open('quiz_recommendation.pkl', 'wb'))
-
- 
