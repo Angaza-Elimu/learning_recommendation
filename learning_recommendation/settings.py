@@ -81,9 +81,9 @@ WSGI_APPLICATION = 'learning_recommendation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'stage_2',
-        'USER': 'root',
-        'PASSWORD': '12345678',
+        'NAME': os.environ.get('MYSQL_DB_NAME'),
+        'USER': os.environ.get('MYSQL_DB_USER'),
+        'PASSWORD': os.environ.get('MYSQL_DB_PASS'),
         'HOST': '127.0.0.1',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
