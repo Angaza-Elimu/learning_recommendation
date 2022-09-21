@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import pickle
+import os
+import json
+from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -69,7 +72,7 @@ def classify_student_v1(request):
 def diagnostic_recommendation(request):
     print(request.data)
     #Open our model
-    model = pickle.load(open('v2_weights/quiz_recommendation.pkl','rb'))
+    model = pickle.load(open(os.path.join(settings.BASE_DIR, 'v2_weights/quiz_recommendation.pkl'),'rb'))
     #obtain all form values and place them in an array, convert into integers
     question_level_code = request.data.get('question_level_code')
 
