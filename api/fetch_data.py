@@ -29,7 +29,7 @@ class FetchData:
         return action
 
     def create_questions(self, mark):
-            create_query= 'select * from questions where question_level= create and subtopic_id=self.subtopic'
+            create_query= models.QuizQuestions.objects.filter(question_level="create", subtopic_id=self.subtopic_id).values()
             create_questions=[]
             create_questions.append(create_query)
             if len(create_questions) != 0 :
@@ -42,7 +42,7 @@ class FetchData:
 
     def evaluate_questions(self, mark):
 
-        evaluate_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="evaluate" and subtopic_id='+self.subtopic_id)
+        evaluate_query= models.QuizQuestions.objects.filter(question_level="evaluate", subtopic_id=self.subtopic_id).values()
         evaluate_questions=[]
         evaluate_questions.append(evaluate_query)
 
@@ -50,18 +50,18 @@ class FetchData:
             action = random.choice(evaluate_questions)
 
         elif len(evaluate_questions) == 0 and mark==1 :
-            action = create_questions(self)
+            action = self.create_questions(self)
 
         elif len(evaluate_questions) != 0 and mark==0 :
              action = random.choice(evaluate_questions)
         else:
-            action = analyze_questions(self.subtopic, mark)
+            action = self.analyze_questions( mark)
         return action
 
 
     def analyze_questions(self, mark):
 
-        analyze_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="create" and subtopic_id='+self.subtopic_id)
+        analyze_query= models.QuizQuestions.objects.filter(question_level="analyze", subtopic_id=self.subtopic_id).values()
         analyze_questions=[]
         analyze_questions.append(analyze_query)
         if len(analyze_questions) != 0 and mark==1 :
@@ -69,55 +69,55 @@ class FetchData:
             action = random.choice(analyze_questions)
 
         elif len(analyze_questions) == 0 and mark==1 :
-            action=evaluate_questions(self.subtopic, mark)
+            action= self.evaluate_questions( mark)
 
         elif len(analyze_questions) != 0 and mark==0 :
             action = random.choice(analyze_questions)
         else:
-            action=apply_questions(self.subtopic, mark)
+            action= self.apply_questions(mark)
         return action
 
     def apply_questions(self, mark):
 
-        apply_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="apply" and subtopic_id='+self.subtopic_id)
+        apply_query= models.QuizQuestions.objects.filter(question_level="apply", subtopic_id=self.subtopic_id).values()
         apply_questions=[]
         apply_questions.append(apply_query)
         if len(apply_questions) != 0 and mark==1 :
 
             action = random.choice(apply_questions)
         elif  len(apply_questions) == 0 and mark==1 :
-            action=analyze_questions(self.subtopic, mark)
+            action= self.analyze_questions( mark)
 
         elif  len(apply_questions) != 0 and mark==0 :
             action = random.choice(apply_questions)
 
         else:
 
-            action= understand_questions(self.subtopic, mark)
+            action= self.understand_questions( mark)
         return action
 
     def understand_questions(self, mark):
 
-        understand_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="understand" and subtopic_id='+self.subtopic_id)
+        understand_query= models.QuizQuestions.objects.filter(question_level="understand", subtopic_id=self.subtopic_id).values()
         understand_questions=[]
         understand_questions.append(understand_query)
         if len(understand_questions) != 0 and mark==1 :
 
             action = random.choice(understand_questions)
         elif len(understand_questions) == 0 and mark==1 :
-            action= apply_questions(self.subtopic, mark)
+            action= self.apply_questions( mark)
 
         elif len(understand_questions) != 0 and mark==0 :
              action = random.choice(understand_questions)
 
         else:
 
-            action=remember_questions(self.subtopic, mark)
+            action = self.remember_questions( mark)
         return action
 
     def remember_questions(self, mark):
 
-        remember_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="remember" and subtopic_id='+self.subtopic_id)
+        remember_query= models.QuizQuestions.objects.filter(question_level="remember", subtopic_id=self.subtopic_id).values()
         remember_questions=[]
         remember_questions.append(remember_query)
 
@@ -126,3 +126,21 @@ class FetchData:
         else:
             action = random.choice(remember_questions)
         return action
+
+    def get_subtopics(self):
+        diagnostic_subtopics = []
+        subtopic_query = models.Subtopics.objects.raw('SELECT * FROM subtopics where topic_id='+self.subtopic_id)
+        print(subtopic_query[0].id)
+        # diagnostic_subtopics.append(subtopic_query)
+        return self.diagnostic_test(subtopic_query)
+
+    def diagnostic_test(self, diagnostic_subtopics):
+        diagnostic_questions = list()
+        for idx, i in enumerate(diagnostic_subtopics):
+            print(diagnostic_subtopics[idx].id)
+            if(diagnostic_subtopics[idx].id):
+                # print()
+                questions_query= list(models.QuizQuestions.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).values())
+                print(len(questions_query))
+                diagnostic_questions.extend(random.choices(questions_query, k=2))
+        return(diagnostic_questions)

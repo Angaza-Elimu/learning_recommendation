@@ -10,6 +10,9 @@ from django.forms.models import model_to_dict
 from api import fetch_data
 from sklearn.preprocessing import StandardScaler
 import numpy as np
+import random
+
+from django.forms.models import model_to_dict
 # Create your views here.
 
 @api_view(['GET'])
@@ -67,7 +70,6 @@ def classify_student_v1(request):
 
 @api_view(['POST'])
 def diagnostic_recommendation(request):
-    print(request.data)
     #Open our model
     model = pickle.load(open('v2_weights/quiz_recommendation.pkl','rb'))
     #obtain all form values and place them in an array, convert into integers
@@ -89,23 +91,21 @@ def diagnostic_recommendation(request):
 
     fetch_da = fetch_data.FetchData(subtopic_id)
 
+    quiz_questions = list()
+
     if output == 'recommend analyze questions':
-        fetch_da.analyze_questions(mark=1)
+        quiz_questions = list(fetch_da.analyze_questions(marked))
     elif output == 'recommend create questions':
-        fetch_da.create_questions(mark=1)
+        quiz_questions = list(fetch_da.create_questions(marked))
     elif output == 'recommend evaluate questions':
-        fetch_da.evaluate_questions(mark=1)
+        quiz_questions = list(fetch_da.evaluate_questions(marked))
     elif output == 'recommend understand questions':
-        fetch_da.understand_questions(mark=1)
+        quiz_questions = list(fetch_da.understand_questions(marked))
     elif output == 'recommend remember questions':
-        fetch_da.remember_questions(mark=1)
+        quiz_questions = list(fetch_da.remember_questions(marked))
     elif output == 'recommend apply questions':
-        fetch_da.apply_questions(mark=1)
+        quiz_questions = list(fetch_da.apply_questions(marked))
 
-
-    fetch_da.evaluate_questions(mark=1)
-
-    quiz_questions = list(models.QuizQuestions.objects.filter(subtopic_id = 384).values())
     # data = serializers.serialize('json', quiz_questions)
     # data = serializers.Serialize('json',quiz_questions)
     predictions = {
@@ -118,7 +118,22 @@ def diagnostic_recommendation(request):
 
     return Response(predictions)
 
-
+@api_view(['POST'])
+def retrieve_diagnostic_questions(request):
+    topic_id =  request.data.get('topic_id')
+    fetch_da = fetch_data.FetchData(topic_id)
+    print(topic_id)
+    subtopics = fetch_da.get_subtopics()
+    print(subtopics)
+    test = {
+        "questions": subtopics
+    }
+    return Response(test)
+    # diagnostic_subtopics=[]
+    # subtopic_query= select subtopic_id from subtopics where topic_id=current_topic
+    # subtopic_query =
+    # diagnostic_subtopics.append(subtopic_query)
+    # diagnostic_test(diagnostic_subtopics)
 
 def testPredictionCorrect(self):
     resp = self.api_client.get('/predict', format='json')
