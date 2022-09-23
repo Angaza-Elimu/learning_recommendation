@@ -19,7 +19,7 @@ class QuizQuestions(models.Model):
     answer = models.CharField(max_length=255)
     additional_notes = models.CharField(max_length=255)
     created_at = models.DateField(...)
-    question_type = models.CharField(max_length=255)
+    question_level = models.CharField(max_length=255)
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -36,3 +36,13 @@ class Subtopics(models.Model):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
+
+class QuestionAnswers(models.Model):
+    class Meta:
+        db_table = 'question_answers'
+
+    question_id = models.IntegerField(...)
+    subtopic_id = models.IntegerField(...)
+    subject_id = models.IntegerField(...)
+    quiz_id = models.IntegerField(...)
+    student_id = models.IntegerField(...)

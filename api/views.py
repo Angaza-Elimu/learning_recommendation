@@ -138,9 +138,82 @@ def retrieve_diagnostic_questions(request):
     # diagnostic_subtopics.append(subtopic_query)
     # diagnostic_test(diagnostic_subtopics)
 
+@api_view(['POST'])
+def retrieve_diagnostic_recommendation(request):
+    model = pickle.load(open('v2_weights/diagnostic_test_recommendation.pkl','rb'))
+    topic_id =  request.data.get('topic_id')
+    answers =  request.data.get('answers')
+    total_score = len(answers)
+
+    total_weighted_mark = 0
+    for i in answers:
+        print(i['marked'])
+        i['weighted_mark'] = i['marked'] * getQuestionLevelCode(i['question_level'])
+        total_weighted_mark += i['marked'] * getQuestionLevelCode(i['question_level'])
+
+    score = total_weighted_mark/float(total_score)
+    pred_array = [float(score)]
+    prediction = model.predict([np.array(pred_array)])
+    if prediction == 'recommend failed subtopic materials':
+        return Response(low_level_material(answers,prediction))
+    elif prediction == 'recommend high level questions for passed_subtopics':
+        return Response(high_level(answers, prediction))
+    else:
+        return Response({})
+    # score = (score - score.min()) / (score.max() - score.min())
+    return Response(recc)
+
 def testPredictionCorrect(self):
     resp = self.api_client.get('/predict', format='json')
     self.assertValidJSONResponse(resp)
 
+def getQuestionLevelCode(question_code):
+    if question_code == 'remember':
+        return 1
+    elif question_code == 'understand':
+        return 2
+    elif question_code == 'apply':
+        return 3
+    elif question_code == 'analyze':
+        return 4
+    elif question_code == 'evaluate':
+        return 5
+    elif question_code == 'create':
+        return 6
+    else:
+        return 0
+
+
+def low_level_material(questions, prediction):
+    subtopic_notes = []
+    for i in questions:
+        subtopic = models.Subtopics.objects.filter(id=i['subtopic_id']).values()
+        subtopic_notes.extend(subtopic)
+
+    return {
+        "questiions": [],
+        "subtopics_to_read": subtopic_notes,
+        "prediction": prediction
+    }
+def high_level(questions,prediction):
+    high_level_questions = []
+    subtopic_notes = []
+    for i in questions:
+        print(i)
+        if i['marked'] == 1:
+            create_query = models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="create" and subtopic_id='+ str(i['subtopic_id']))
+            high_level_questions.extend(create_query)
+            evaluate_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="evaluate" and subtopic_id='+str(i['subtopic_id']))
+            high_level_questions.extend(evaluate_query)
+            analyze_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="analyze" and subtopic_id='+str(i['subtopic_id']))
+            high_level_questions.extend(analyze_query)
+        else:
+            subtopic = models.Subtopics.objects.filter(id=i['subtopic_id']).values()
+            subtopic_notes.extend(subtopic)
+    return {
+        'questions': high_level_questions,
+        'subtopics_to_read': subtopic_notes,
+        'prediction': prediction
+    }
 
 #Set a post method to yield predictions on page

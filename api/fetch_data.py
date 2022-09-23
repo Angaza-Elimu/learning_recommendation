@@ -82,17 +82,15 @@ class FetchData:
         apply_query= models.QuizQuestions.objects.filter(question_level="apply", subtopic_id=self.subtopic_id).values()
         apply_questions=[]
         apply_questions.append(apply_query)
-        if len(apply_questions) != 0 and mark==1 :
+        if len(apply_questions) != 0 and mark==1:
 
             action = random.choice(apply_questions)
         elif  len(apply_questions) == 0 and mark==1 :
             action= self.analyze_questions( mark)
 
-        elif  len(apply_questions) != 0 and mark==0 :
+        elif  len(apply_questions) != 0 and mark==0:
             action = random.choice(apply_questions)
-
         else:
-
             action= self.understand_questions( mark)
         return action
 
@@ -102,17 +100,13 @@ class FetchData:
         understand_questions=[]
         understand_questions.append(understand_query)
         if len(understand_questions) != 0 and mark==1 :
-
             action = random.choice(understand_questions)
         elif len(understand_questions) == 0 and mark==1 :
-            action= self.apply_questions( mark)
-
+            action= self.apply_questions(mark)
         elif len(understand_questions) != 0 and mark==0 :
              action = random.choice(understand_questions)
-
         else:
-
-            action = self.remember_questions( mark)
+            action = self.remember_questions(mark)
         return action
 
     def remember_questions(self, mark):
