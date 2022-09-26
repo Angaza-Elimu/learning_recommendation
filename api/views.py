@@ -140,7 +140,7 @@ def retrieve_diagnostic_questions(request):
 
 @api_view(['POST'])
 def retrieve_diagnostic_recommendation(request):
-    model = pickle.load(open('v2_weights/diagnostic_test_recommendation.pkl','rb'))
+    model = pickle.load(open(os.path.join(settings.BASE_DIR, 'v2_weights/diagnostic_test_recommendation.pkl'),'rb'))
     topic_id =  request.data.get('topic_id')
     answers =  request.data.get('answers')
     total_score = len(answers)

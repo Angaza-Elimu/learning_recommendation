@@ -124,9 +124,12 @@ class FetchData:
     def get_subtopics(self):
         diagnostic_subtopics = []
         subtopic_query = models.Subtopics.objects.raw('SELECT * FROM subtopics where topic_id='+self.subtopic_id)
-        print(subtopic_query[0].id)
+        # print(subtopic_query[0].id)
         # diagnostic_subtopics.append(subtopic_query)
-        return self.diagnostic_test(subtopic_query)
+	if len(subtopic_query) > 0:
+            return self.diagnostic_test(subtopic_query)
+        else:
+            return []
 
     def diagnostic_test(self, diagnostic_subtopics):
         diagnostic_questions = list()
