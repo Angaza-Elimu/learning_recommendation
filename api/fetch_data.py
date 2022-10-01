@@ -139,5 +139,6 @@ class FetchData:
                 # print()
                 questions_query= list(models.QuizQuestions.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).exclude(question_level="L").values())
                 print(len(questions_query))
-                diagnostic_questions.extend(random.choices(questions_query, k=2))
+                if len(questions_query) > 1:
+                    diagnostic_questions.extend(random.choices(questions_query, k=2))
         return(diagnostic_questions)
