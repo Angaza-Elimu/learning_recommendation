@@ -137,7 +137,7 @@ class FetchData:
             print(diagnostic_subtopics[idx].id)
             if(diagnostic_subtopics[idx].id):
                 # print()
-                questions_query= list(models.QuizQuestions.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).values())
+                questions_query= list(models.QuizQuestions.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).exclude(question_level="L").values())
                 print(len(questions_query))
                 diagnostic_questions.extend(random.choices(questions_query, k=2))
         return(diagnostic_questions)
