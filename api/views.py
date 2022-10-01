@@ -78,6 +78,21 @@ def diagnostic_recommendation(request):
     #obtain all form values and place them in an array, convert into integers
     question_level_code = request.data.get('question_level_code')
 
+    if question_level_code == 'remember':
+        question_level_code = 1
+    elif question_level_code == 'understand':
+        question_level_code = 2
+    elif question_level_code == 'apply':
+        question_level_code = 3
+    elif question_level_code == 'analyze':
+        question_level_code = 4
+    elif question_level_code == 'evaluate':
+        question_level_code = 5
+    elif question_level_code == 'create':
+        question_level_code = 6
+    else:
+        question_level_code = question_level_code
+
     marked = request.data.get('marked')
 
     subtopic_id = request.data.get('subtopic_id')
