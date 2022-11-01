@@ -206,7 +206,7 @@ def low_level_material(questions, prediction):
         subtopic_notes.extend(subtopic)
 
     return {
-        "questiions": [],
+        "questions": [],
         "subtopics_to_read": subtopic_notes,
         "prediction": prediction
     }
@@ -216,11 +216,11 @@ def high_level(questions,prediction):
     for i in questions:
         print(i)
         if i['marked'] == 1:
-            create_query = models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="create" and subtopic_id='+ str(i['subtopic_id']))
+            create_query = models.QuizQuestions.objects.filter(question_level='create', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(create_query)
-            evaluate_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="evaluate" and subtopic_id='+str(i['subtopic_id']))
+            evaluate_query= models.QuizQuestions.objects.filter(question_level='evaluate', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(evaluate_query)
-            analyze_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="analyze" and subtopic_id='+str(i['subtopic_id']))
+            analyze_query= models.QuizQuestions.objects.filter(question_level='analyze', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(analyze_query)
         else:
             subtopic = models.Subtopics.objects.filter(id=i['subtopic_id']).values()
