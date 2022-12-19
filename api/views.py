@@ -181,7 +181,7 @@ def retrieve_diagnostic_recommendation(request):
 @api_view(['POST'])
 def assign_user_schools(request):
     main_school_code = 4900
-    schools_without_query = models.Schools.objects.filter(school_code__isnull=True).values()
+    schools_without_query = models.Schools.objects.filter(school_code='').values()
     # last_school_with_query = models.Schools.objects.filter(school_code__isnull=False).order_by('-school_code').values()[0]
     # last_school_code = last_school_with_query['school_code']
     # For each schools_without_query, assign a school code
