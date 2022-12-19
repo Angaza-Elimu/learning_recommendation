@@ -176,7 +176,26 @@ def retrieve_diagnostic_recommendation(request):
     else:
         return Response({})
     # score = (score - score.min()) / (score.max() - score.min())
-    return Response(recc)
+
+
+@api_view(['POST'])
+def assign_user_schools(request):
+    main_school_code = 4900
+    schools_without_query = models.Schools.objects.filter(school_code__isnull=True).values()
+    # last_school_with_query = models.Schools.objects.filter(school_code__isnull=False).order_by('-school_code').values()[0]
+    # last_school_code = last_school_with_query['school_code']
+    # For each schools_without_query, assign a school code
+    for i in schools_without_query:
+        main_school_code += 1
+        print(main_school_code)
+        models.Schools.objects.filter(id=i['id']).update(school_code=main_school_code)
+        # replace users with school_code
+        models.Users.objects.filter(school_code=i['school_name']).update(school_code=main_school_code)
+    return Response({
+      "school_code": main_school_code
+    })
+
+
 
 def testPredictionCorrect(self):
     resp = self.api_client.get('/predict', format='json')
@@ -230,5 +249,4 @@ def high_level(questions,prediction):
         'subtopics_to_read': subtopic_notes,
         'prediction': prediction
     }
-
 #Set a post method to yield predictions on page

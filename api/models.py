@@ -46,3 +46,23 @@ class QuestionAnswers(models.Model):
     subject_id = models.IntegerField(...)
     quiz_id = models.IntegerField(...)
     student_id = models.IntegerField(...)
+
+class Schools(models.Model):
+    class Meta:
+        db_table = 'schools'
+    school_name = models.CharField(max_length=255)
+    school_code = models.CharField(max_length=255)
+    county_id = models.IntegerField(...)
+
+class Users(models.Model):
+    class Meta:
+        db_table = 'users'
+    
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=255)
+    school_code = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
+
+
