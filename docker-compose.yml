@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mysql
+    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+    # (this is just an example, not intended to be a production configuration)
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: learn_rec@131
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/learning_recommendation
+    ports:
+      - "8000:8000"
+    environment:
+      - MYSQL_DB_NAME=learning_recommendation
+      - MYSQL_DB_PASS=learn_rec@131
+      - MYSQL_DB_USER=root
+    depends_on:
+      - db
