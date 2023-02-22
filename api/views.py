@@ -147,11 +147,7 @@ def retrieve_diagnostic_questions(request):
         "questions": subtopics
     }
     return Response(test)
-    # diagnostic_subtopics=[]
-    # subtopic_query= select subtopic_id from subtopics where topic_id=current_topic
-    # subtopic_query =
-    # diagnostic_subtopics.append(subtopic_query)
-    # diagnostic_test(diagnostic_subtopics)
+
 
 @api_view(['POST'])
 def retrieve_diagnostic_recommendation(request):
