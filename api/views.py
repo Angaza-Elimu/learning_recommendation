@@ -225,7 +225,6 @@ def low_level_material(questions, prediction):
         subtopic_notes.extend(subtopic)
 
     return {
-        "questions": [],
         "subtopics_to_read": subtopic_notes,
         "prediction": prediction
     }
