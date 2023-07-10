@@ -21,6 +21,7 @@ jobs:
         pip install djangorestframework
         pip install sklearn
         pip install mysqlclient
+        pip install djangonose
         pip install coverage
         coverage run manage.py test
     # - name: Upload Coverage to Codecov
