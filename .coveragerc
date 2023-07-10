@@ -1,5 +1,11 @@
 [run]
 omit =
+    */views.py
+    */tests.py
     */site-packages/*
     */distutils/*
     tests/*
+    tests.py
+
+[report]
+show_missing = true

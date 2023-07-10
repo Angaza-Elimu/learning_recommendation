@@ -25,7 +25,6 @@ class FetchData:
             action= failed_subtopic_materials
             if len(failed_subtopic_materials) == 0:
                 action= "you have mastered this topic, you can choose another topic to study"
-
         return action
 
     def create_questions(self, mark):
@@ -34,8 +33,6 @@ class FetchData:
             create_questions.append(create_query)
             if len(create_questions) != 0 :
                 action = random.choice(create_questions)
-            # elif len(create_questions) == 0 and mark==1:
-            #     action = create_questions(self.subtopic)
             else:
                 action= failed_subtopic_materials(failed_subtopics)
             return action
@@ -83,11 +80,9 @@ class FetchData:
         apply_questions=[]
         apply_questions.append(apply_query)
         if len(apply_questions) != 0 and mark==1:
-
             action = random.choice(apply_questions)
         elif  len(apply_questions) == 0 and mark==1 :
             action= self.analyze_questions( mark)
-
         elif  len(apply_questions) != 0 and mark==0:
             action = random.choice(apply_questions)
         else:
@@ -124,8 +119,6 @@ class FetchData:
     def get_subtopics(self):
         diagnostic_subtopics = []
         subtopic_query = models.Subtopics.objects.raw('SELECT * FROM subtopics where topic_id='+self.subtopic_id)
-        # print(subtopic_query[0].id)
-        # diagnostic_subtopics.append(subtopic_query)
         if len(subtopic_query) > 0:
             return self.diagnostic_test(subtopic_query)
         else:
@@ -136,7 +129,6 @@ class FetchData:
         for idx, i in enumerate(diagnostic_subtopics):
             print(diagnostic_subtopics[idx].id)
             if(diagnostic_subtopics[idx].id):
-                # print()
                 questions_query= list(models.QuizQuestions.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).exclude(question_level="L").values())
                 print(len(questions_query))
                 if len(questions_query) > 1:
