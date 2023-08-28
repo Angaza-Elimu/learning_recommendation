@@ -9,18 +9,18 @@ class FetchData:
     def high_level_questions(self, passed_subtopics, subtopic_id):
         high_level_questions=[]
         for i in passed_subtopics:
-            create_query = models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="create" and subtopic_id='+ self.subtopic_id)
+            create_query = models.StrandActivities.objects.raw('SELECT * FROM strand_activities_assessments where taxonomy_tag="create" and subtopic_id='+ self.subtopic_id)
             high_level_questions.append(create_query)
-            evaluate_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="evaluate" and subtopic_id='+self.subtopic_id)
+            evaluate_query= models.StrandActivities.objects.raw('SELECT * FROM strand_activities_assessments where taxonomy_tag="evaluate" and subtopic_id='+self.subtopic_id)
             high_level_questions.append(evaluate_query)
-            analyze_query= models.QuizQuestions.objects.raw('SELECT * FROM quizq_questions where question_level="analyze" and subtopic_id='+self.subtopic_id)
+            analyze_query= models.StrandActivities.objects.raw('SELECT * FROM strand_activities_assessments where taxonomy_tag="analyze" and subtopic_id='+self.subtopic_id)
             high_level_questions.append(analyze_query)
         return high_level_questions
 
     def failed_subtopic_materials(self, failed_subtopics):
         failed_subtopic_materials=[]
         for i in failed_subtopics:
-            notes_query = models.QuizQuestions.objects.raw('SELECT * FROM angaza_notes where subtopic_id='+self.subtopic_id)
+            notes_query = models.StrandActivities.objects.raw('SELECT * FROM angaza_notes where subtopic_id='+self.subtopic_id)
             failed_subtopic_materials.append(notes_query)
             action= failed_subtopic_materials
             if len(failed_subtopic_materials) == 0:
@@ -28,18 +28,18 @@ class FetchData:
         return action
 
     def create_questions(self, mark):
-            create_query= models.QuizQuestions.objects.filter(question_level="create", subtopic_id=self.subtopic_id).values()
+            create_query= models.StrandActivities.objects.filter(taxonomy_tag="create", subtopic_id=self.subtopic_id).values()
             create_questions=[]
             create_questions.append(create_query)
             if len(create_questions) != 0 :
                 action = random.choice(create_questions)
             else:
-                action= failed_subtopic_materials(failed_subtopics)
+                action= self.failed_subtopic_materials(failed_subtopics)
             return action
 
     def evaluate_questions(self, mark):
 
-        evaluate_query= models.QuizQuestions.objects.filter(question_level="evaluate", subtopic_id=self.subtopic_id).values()
+        evaluate_query= models.StrandActivities.objects.filter(taxonomy_tag="evaluate", subtopic_id=self.subtopic_id).values()
         evaluate_questions=[]
         evaluate_questions.append(evaluate_query)
 
@@ -58,7 +58,7 @@ class FetchData:
 
     def analyze_questions(self, mark):
 
-        analyze_query= models.QuizQuestions.objects.filter(question_level="analyze", subtopic_id=self.subtopic_id).values()
+        analyze_query= models.StrandActivities.objects.filter(taxonomy_tag="analyze", subtopic_id=self.subtopic_id).values()
         analyze_questions=[]
         analyze_questions.append(analyze_query)
         if len(analyze_questions) != 0 and mark==1 :
@@ -76,7 +76,7 @@ class FetchData:
 
     def apply_questions(self, mark):
 
-        apply_query= models.QuizQuestions.objects.filter(question_level="apply", subtopic_id=self.subtopic_id).values()
+        apply_query= models.StrandActivities.objects.filter(taxonomy_tag="apply", subtopic_id=self.subtopic_id).values()
         apply_questions=[]
         apply_questions.append(apply_query)
         if len(apply_questions) != 0 and mark==1:
@@ -91,7 +91,7 @@ class FetchData:
 
     def understand_questions(self, mark):
 
-        understand_query= models.QuizQuestions.objects.filter(question_level="understand", subtopic_id=self.subtopic_id).values()
+        understand_query= models.StrandActivities.objects.filter(taxonomy_tag="understand", subtopic_id=self.subtopic_id).values()
         understand_questions=[]
         understand_questions.append(understand_query)
         if len(understand_questions) != 0 and mark==1 :
@@ -106,7 +106,7 @@ class FetchData:
 
     def remember_questions(self, mark):
 
-        remember_query= models.QuizQuestions.objects.filter(question_level="remember", subtopic_id=self.subtopic_id).values()
+        remember_query= models.StrandActivities.objects.filter(taxonomy_tag="remember", subtopic_id=self.subtopic_id).values()
         remember_questions=[]
         remember_questions.append(remember_query)
 
@@ -118,7 +118,7 @@ class FetchData:
 
     def get_subtopics(self):
         diagnostic_subtopics = []
-        subtopic_query = models.Subtopics.objects.raw('SELECT * FROM subtopics where topic_id='+self.subtopic_id)
+        subtopic_query = models.Subtopics.objects.raw('SELECT * FROM sub_strands where strand_id='+self.subtopic_id)
         if len(subtopic_query) > 0:
             return self.diagnostic_test(subtopic_query)
         else:
@@ -129,7 +129,7 @@ class FetchData:
         for idx, i in enumerate(diagnostic_subtopics):
             print(diagnostic_subtopics[idx].id)
             if(diagnostic_subtopics[idx].id):
-                questions_query= list(models.QuizQuestions.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).exclude(question_level="L").values())
+                questions_query= list(models.StrandActivities.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).exclude(taxonomy_tag="L").values())
                 print(len(questions_query))
                 if len(questions_query) > 1:
                     diagnostic_questions.extend(random.choices(questions_query, k=2))
