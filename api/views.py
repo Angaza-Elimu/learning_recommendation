@@ -147,17 +147,14 @@ def retrieve_diagnostic_questions(request):
         "questions": subtopics
     }
     return Response(test)
-    # diagnostic_subtopics=[]
-    # subtopic_query= select subtopic_id from subtopics where topic_id=current_topic
-    # subtopic_query =
-    # diagnostic_subtopics.append(subtopic_query)
-    # diagnostic_test(diagnostic_subtopics)
+
 
 @api_view(['POST'])
 def retrieve_diagnostic_recommendation(request):
     model = pickle.load(open(os.path.join(settings.BASE_DIR, 'v2_weights/diagnostic_test_recommendation.pkl'),'rb'))
     topic_id =  request.data.get('topic_id')
     answers =  request.data.get('answers')
+    user_id = request.data.get('user_id')
     total_score = len(answers)
 
     total_weighted_mark = 0
@@ -249,4 +246,3 @@ def high_level(questions,prediction):
         'subtopics_to_read': subtopic_notes,
         'prediction': prediction
     }
-#Set a post method to yield predictions on page
