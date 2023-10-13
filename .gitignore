@@ -1,3 +1,4 @@
 lib/**
 bin/**
 __pycache__/
+env/**

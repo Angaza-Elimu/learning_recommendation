@@ -100,9 +100,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'test_staging_server',
-        'USER': 'root',
-        'PASSWORD': '1091997sc',
-        'HOST': 'localhost',
+        'USER': 'dbmasteruser',
+        'PASSWORD': '+V~gQ0<&1?r#[V[H&?*Sgt_f0yta2rdz',
+        'HOST': 'ls-bfcb7f4a80e6fce3b888e7a2f5450c2e2b7e1299.cl1ulb8sswbj.ap-south-1.rds.amazonaws.com',
 	      'PORT': '3306'
     }
 }
