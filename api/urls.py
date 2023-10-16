@@ -8,5 +8,4 @@ urlpatterns = [
     path('retrieve_diagnostic_questions', views.retrieve_diagnostic_questions),
     path('retrieve_diagnostic_recommendation', views.retrieve_diagnostic_recommendation),
     path('assignUserSchools', views.assign_user_schools),
-    path('manifesto_query', views.manifesto_query)
 ]

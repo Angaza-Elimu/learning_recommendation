@@ -16,20 +16,7 @@ import numpy as np
 import random
 
 from django.forms.models import model_to_dict
-
-
-from PyPDF2 import PdfReader
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
-import os
-os.environ["OPENAI_API_KEY"] = "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"
-import requests
-import io
 # Create your views here.
-from typing_extensions import Concatenate
 
 @api_view(['GET'])
 def index_page(request):
@@ -187,38 +174,6 @@ def retrieve_diagnostic_recommendation(request):
         return Response({})
     # score = (score - score.min()) / (score.max() - score.min())
 
-@api_view(['POST'])
-def manifesto_query(request):
-    headers = {'User-Agent': 'Mozilla/5.0 (X11; Windows; Windows x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36'}
-
-    url = 'https://africacheck.org/sites/default/files/media/documents/2022-08/Kenya%20Kwanza%20UDA%20Manifesto%202022.pdf'
-    response = requests.get(url=url, headers=headers, timeout=120)
-    on_fly_mem_obj = io.BytesIO(response.content)
-    pdfreader = PdfReader(on_fly_mem_obj)
-    raw_text = ""
-
-    for i, page in enumerate(pdfreader.pages):
-        content = page.extract_text()
-        if content:
-            raw_text += content
-            
-    text_splitter = CharacterTextSplitter(
-    separator = "\n",
-    chunk_size = 800,
-    chunk_overlap  = 200,
-    length_function = len,
-    )
-    texts = text_splitter.split_text(raw_text)
-    embeddings = OpenAIEmbeddings()
-    document_search = FAISS.from_texts(texts, embeddings)
-    chain = load_qa_chain(OpenAI(), chain_type="stuff")
-    query = request.data.get('query')
-    docs = document_search.similarity_search(query)
-    result = chain.run(input_documents=docs, question=query)
-    
-    return Response({
-        "result": result
-    })
 
 @api_view(['POST'])
 def assign_user_schools(request):
