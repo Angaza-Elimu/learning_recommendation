@@ -46,6 +46,16 @@ class StrandActivities(models.Model):
         return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
+class SubStrands:
+    class Meta:
+        db_table = "sub_strands"
+    id = models.IntegerField(primary_key=True)
+    sub_strand_name = models.CharField(max_length=255)
+    strand_id = models.IntegerField(...)
+    course_id = models.IntegerField(...)
+    grade_id = models.IntegerField(...)
+
+
 class Subtopics(models.Model):
     class Meta:
         db_table = "subtopics"
