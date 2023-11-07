@@ -237,11 +237,11 @@ def high_level(questions,prediction):
     for i in questions:
         print(i)
         if i['marked'] == 1:
-            create_query = models.StrandActivities.objects.filter(taxonomy_tag='create', subtopic_id=i['topic_id']).values()
+            create_query = models.StrandActivities.objects.filter(taxonomy_tag='create', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(create_query)
-            evaluate_query= models.StrandActivities.objects.filter(taxonomy_tag='evaluate', subtopic_id=i['topic_id']).values()
+            evaluate_query= models.StrandActivities.objects.filter(taxonomy_tag='evaluate', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(evaluate_query)
-            analyze_query= models.StrandActivities.objects.filter(taxonomy_tag='analyze', subtopic_id=i['topic_id']).values()
+            analyze_query= models.StrandActivities.objects.filter(taxonomy_tag='analyze', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(analyze_query)
         else:
             subtopic = models.SubStrands.objects.filter(id=i['subtopic_id']).values()
