@@ -119,6 +119,7 @@ class FetchData:
     def get_subtopics(self):
         diagnostic_subtopics = []
         subtopic_query = models.SubStrands.objects.raw('SELECT * FROM sub_strands where strand_id='+self.subtopic_id)
+
         if len(subtopic_query) > 0:
             return self.diagnostic_test(subtopic_query)
         else:
@@ -129,7 +130,7 @@ class FetchData:
         for idx, i in enumerate(diagnostic_subtopics):
             print(diagnostic_subtopics[idx].id)
             if(diagnostic_subtopics[idx].id):
-                questions_query= models.StrandActivities.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id))
+                questions_query= models.StrandActivities.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)).values()
                 print(len(questions_query))
                 if len(questions_query) > 1:
                     diagnostic_questions.extend(random.choices(questions_query, k=2))
