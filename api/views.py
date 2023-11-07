@@ -177,7 +177,6 @@ def retrieve_diagnostic_recommendation(request):
         return Response({})
     # score = (score - score.min()) / (score.max() - score.min())
 
-
 @api_view(['POST'])
 def assign_user_schools(request):
     main_school_code = 4900
@@ -221,7 +220,7 @@ def getQuestionLevelCode(question_code):
 def low_level_material(questions, prediction):
     subtopic_notes = []
     for i in questions:
-        subtopic = models.Subtopics.objects.filter(id=i['subtopic_id']).values()
+        subtopic = models.Substrands.objects.filter(id=i['subtopic_id']).values()
         subtopic_notes.extend(subtopic)
 
     return {
