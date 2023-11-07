@@ -129,7 +129,7 @@ class FetchData:
         for idx, i in enumerate(diagnostic_subtopics):
             print(diagnostic_subtopics[idx].id)
             if(diagnostic_subtopics[idx].id):
-                questions_query= list(models.StrandActivities.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id))).values()
+                questions_query= list(models.StrandActivities.objects.filter(subtopic_id=str(diagnostic_subtopics[idx].id)))
                 print(len(questions_query))
                 if len(questions_query) > 1:
                     diagnostic_questions.extend(random.choices(questions_query, k=2))
