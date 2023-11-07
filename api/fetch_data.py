@@ -118,7 +118,7 @@ class FetchData:
 
     def get_subtopics(self):
         diagnostic_subtopics = []
-        subtopic_query = models.Subtopics.objects.raw('SELECT * FROM sub_strands where strand_id='+self.subtopic_id)
+        subtopic_query = models.SubStrands.objects.raw('SELECT * FROM sub_strands where strand_id='+self.subtopic_id)
         if len(subtopic_query) > 0:
             return self.diagnostic_test(subtopic_query)
         else:
