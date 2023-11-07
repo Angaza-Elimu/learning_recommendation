@@ -28,7 +28,6 @@ class QuizQuestions(models.Model):
 class StrandActivities(models.Model):
     class Meta:
         db_table = "strand_activities_assessments"
-    id  = models.IntegerField(primary_key=True)
     subtopic_id = models.CharField(max_length=255)
     subject_id = models.IntegerField(...)
     score = models.IntegerField(...)
@@ -48,12 +47,11 @@ class StrandActivities(models.Model):
 
 class SubStrands(models.Model):
     class Meta:
-        db_table = "sub_strands"
+        db_table = "subtopics"
     id = models.IntegerField(primary_key=True)
-    sub_strand_name = models.CharField(max_length=255)
-    strand_id = models.IntegerField(...)
-    course_id = models.IntegerField(...)
-    grade_id = models.IntegerField(...)
+    topic_id = models.IntegerField(...)
+    subtopic_name = models.CharField(max_length=255)
+    subject_id = models.IntegerField(...)
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,

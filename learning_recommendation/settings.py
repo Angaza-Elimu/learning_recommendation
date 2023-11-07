@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'learning_recommendation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'staging_server',
+        'NAME': 'data_merge_dump',
         'USER': 'root',
         'PASSWORD': '1091997sc',
         'HOST': 'localhost',
