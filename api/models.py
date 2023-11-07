@@ -58,17 +58,17 @@ class SubStrands(models.Model):
             sort_keys=True, indent=4)
 
 
-class Subtopics(models.Model):
-    class Meta:
-        db_table = "subtopics"
-    id = models.IntegerField(primary_key=True)
-    topic_id = models.IntegerField(...)
-    subtopic_name = models.CharField(max_length=255)
-    subject_id = models.IntegerField(...)
+# class Subtopics(models.Model):
+#     class Meta:
+#         db_table = "subtopics"
+#     id = models.IntegerField(primary_key=True)
+#     topic_id = models.IntegerField(...)
+#     subtopic_name = models.CharField(max_length=255)
+#     subject_id = models.IntegerField(...)
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-            sort_keys=True, indent=4)
+#     def toJSON(self):
+#         return json.dumps(self, default=lambda o: o.__dict__,
+#             sort_keys=True, indent=4)
 
 class QuestionAnswers(models.Model):
     class Meta:
