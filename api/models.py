@@ -47,11 +47,11 @@ class StrandActivities(models.Model):
 
 class SubStrands(models.Model):
     class Meta:
-        db_table = "subtopics"
+        db_table = "sub_strands"
     id = models.IntegerField(primary_key=True)
-    topic_id = models.IntegerField(...)
-    subtopic_name = models.CharField(max_length=255)
-    subject_id = models.IntegerField(...)
+    topic_id = models.IntegerField(name="strand_id")
+    subtopic_name = models.CharField(max_length=255, name="substrand_name")
+    subject_id = models.IntegerField(name="course_id")
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
