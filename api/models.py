@@ -25,6 +25,37 @@ class QuizQuestions(models.Model):
         return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
+class StrandActivities(models.Model):
+    class Meta:
+        db_table = "strand_activities_assessments"
+    id  = models.IntegerField(primary_key=True)
+    subtopic_id = models.CharField(max_length=255)
+    subject_id = models.IntegerField(...)
+    score = models.IntegerField(...)
+    topic_id =  models.IntegerField(...)
+    class_id = models.IntegerField(name="class")
+    taxonomy_tag = models.CharField(max_length=255)
+    explanation = models.CharField(max_length=255)
+    answer = models.CharField(max_length=255)
+    key_word = models.CharField(max_length=255)
+    question = models.CharField(max_length=255)
+    created_at = models.DateField(...)
+    updated_at = models.DateField(...)
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+            sort_keys=True, indent=4)
+
+class SubStrands:
+    class Meta:
+        db_table = "sub_strands"
+    id = models.IntegerField(primary_key=True)
+    sub_strand_name = models.CharField(max_length=255)
+    strand_id = models.IntegerField(...)
+    course_id = models.IntegerField(...)
+    grade_id = models.IntegerField(...)
+
+
 class Subtopics(models.Model):
     class Meta:
         db_table = "subtopics"

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,6 +27,7 @@ SECRET_KEY = 'u)fz*_$8^q0tjsk&+tp3r9kd8ba9r$_8*q*(w!bzr3pty=hhhs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,8 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'coverage',
-    'api',
-    'corsheaders'
+    'api'
+]
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=api',
+    '-i'
 ]
 
 MIDDLEWARE = [
@@ -61,6 +73,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'learning_recommendation.urls'
 
 TEMPLATES = [
+    
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -82,6 +95,7 @@ WSGI_APPLICATION = 'learning_recommendation.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -89,10 +103,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '1091997sc',
         'HOST': 'localhost',
-	'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+	      'PORT': '3306'
     }
 }
 
@@ -111,6 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
+    
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]

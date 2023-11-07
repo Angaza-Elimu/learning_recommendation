@@ -16,7 +16,20 @@ import numpy as np
 import random
 
 from django.forms.models import model_to_dict
+
+
+from PyPDF2 import PdfReader
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.chains.question_answering import load_qa_chain
+from langchain.llms import OpenAI
+import os
+os.environ["OPENAI_API_KEY"] = "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"
+import requests
+import io
 # Create your views here.
+from typing_extensions import Concatenate
 
 @api_view(['GET'])
 def index_page(request):
@@ -147,17 +160,14 @@ def retrieve_diagnostic_questions(request):
         "questions": subtopics
     }
     return Response(test)
-    # diagnostic_subtopics=[]
-    # subtopic_query= select subtopic_id from subtopics where topic_id=current_topic
-    # subtopic_query =
-    # diagnostic_subtopics.append(subtopic_query)
-    # diagnostic_test(diagnostic_subtopics)
+
 
 @api_view(['POST'])
 def retrieve_diagnostic_recommendation(request):
     model = pickle.load(open(os.path.join(settings.BASE_DIR, 'v2_weights/diagnostic_test_recommendation.pkl'),'rb'))
     topic_id =  request.data.get('topic_id')
     answers =  request.data.get('answers')
+    user_id = request.data.get('user_id')
     total_score = len(answers)
 
     total_weighted_mark = 0
@@ -220,31 +230,31 @@ def getQuestionLevelCode(question_code):
 def low_level_material(questions, prediction):
     subtopic_notes = []
     for i in questions:
-        subtopic = models.Substrands.objects.filter(id=i['subtopic_id']).values()
+        subtopic = models.SubStrands.objects.filter(id=i['subtopic_id']).values()
         subtopic_notes.extend(subtopic)
 
     return {
         "subtopics_to_read": subtopic_notes,
         "prediction": prediction
     }
+
 def high_level(questions,prediction):
     high_level_questions = []
     subtopic_notes = []
     for i in questions:
         print(i)
         if i['marked'] == 1:
-            create_query = models.QuizQuestions.objects.filter(question_level='create', subtopic_id=i['subtopic_id']).values()
+            create_query = models.StrandActivities.objects.filter(taxonomy_tag='create', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(create_query)
-            evaluate_query= models.QuizQuestions.objects.filter(question_level='evaluate', subtopic_id=i['subtopic_id']).values()
+            evaluate_query= models.StrandActivities.objects.filter(taxonomy_tag='evaluate', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(evaluate_query)
-            analyze_query= models.QuizQuestions.objects.filter(question_level='analyze', subtopic_id=i['subtopic_id']).values()
+            analyze_query= models.StrandActivities.objects.filter(taxonomy_tag='analyze', subtopic_id=i['subtopic_id']).values()
             high_level_questions.extend(analyze_query)
         else:
-            subtopic = models.Subtopics.objects.filter(id=i['subtopic_id']).values()
+            subtopic = models.SubStrands.objects.filter(id=i['subtopic_id']).values()
             subtopic_notes.extend(subtopic)
     return {
         'questions': high_level_questions,
         'subtopics_to_read': subtopic_notes,
         'prediction': prediction
     }
-#Set a post method to yield predictions on page
