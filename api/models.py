@@ -50,7 +50,7 @@ class SubStrands(models.Model):
         db_table = "sub_strands"
     id = models.IntegerField(primary_key=True)
     topic_id = models.IntegerField(name="strand_id")
-    subtopic_name = models.CharField(max_length=255, name="substrand_name")
+    subtopic_name = models.CharField(max_length=255, name="sub_strand_name")
     subject_id = models.IntegerField(name="course_id")
 
     def toJSON(self):
