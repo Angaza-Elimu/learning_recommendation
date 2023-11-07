@@ -46,7 +46,7 @@ class StrandActivities(models.Model):
         return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
-class SubStrands:
+class SubStrands(models.Model):
     class Meta:
         db_table = "sub_strands"
     id = models.IntegerField(primary_key=True)
@@ -54,6 +54,10 @@ class SubStrands:
     strand_id = models.IntegerField(...)
     course_id = models.IntegerField(...)
     grade_id = models.IntegerField(...)
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+            sort_keys=True, indent=4)
 
 
 class Subtopics(models.Model):
