@@ -17,13 +17,6 @@ import random
 
 from django.forms.models import model_to_dict
 
-
-from PyPDF2 import PdfReader
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
 import os
 os.environ["OPENAI_API_KEY"] = "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"
 import requests
