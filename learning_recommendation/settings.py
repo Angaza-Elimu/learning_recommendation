@@ -73,10 +73,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'learning_recommendation.urls'
 
 TEMPLATES = [
-    
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'api/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,11 +100,14 @@ WSGI_APPLICATION = 'learning_recommendation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_staging_server',
+        'NAME': 'staging_server',
         'USER': 'root',
-        'PASSWORD': '1091997sc',
+        'PASSWORD': '12345678',
         'HOST': 'localhost',
-	      'PORT': '3306'
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
 

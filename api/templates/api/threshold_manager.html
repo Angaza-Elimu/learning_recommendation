@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Threshold Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            padding: 8px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #history {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Threshold Manager</h1>
+
+    <div class="section">
+        <h2>View Current Threshold</h2>
+        <div class="form-group">
+            <label>User ID:</label>
+            <input type="number" id="view-user-id">
+        </div>
+        <div class="form-group">
+            <label>Quiz Type:</label>
+            <select id="view-quiz-type">
+                <option value="starter_quiz">Starter Quiz</option>
+                <option value="diagnostic_quiz">Diagnostic Quiz</option>
+            </select>
+        </div>
+        <button onclick="getThreshold()">View Threshold</button>
+        <div id="current-threshold"></div>
+    </div>
+
+    <div class="section">
+        <h2>Update Threshold</h2>
+        <div class="form-group">
+            <label>User ID:</label>
+            <input type="number" id="update-user-id">
+        </div>
+        <div class="form-group">
+            <label>Quiz Type:</label>
+            <select id="update-quiz-type">
+                <option value="starter_quiz">Starter Quiz</option>
+                <option value="diagnostic_quiz">Diagnostic Quiz</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>New Threshold (0-1):</label>
+            <input type="number" id="threshold" step="0.1" min="0" max="1">
+        </div>
+        <div class="form-group">
+            <label>Reason:</label>
+            <input type="text" id="reason">
+        </div>
+        <div class="form-group">
+            <label>Created By:</label>
+            <input type="text" id="created-by">
+        </div>
+        <button onclick="updateThreshold()">Update Threshold</button>
+        <div id="update-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>View History</h2>
+        <div class="form-group">
+            <label>User ID:</label>
+            <input type="number" id="history-user-id">
+        </div>
+        <div class="form-group">
+            <label>Quiz Type:</label>
+            <select id="history-quiz-type">
+                <option value="starter_quiz">Starter Quiz</option>
+                <option value="diagnostic_quiz">Diagnostic Quiz</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>From Date:</label>
+            <input type="date" id="from-date">
+        </div>
+        <div class="form-group">
+            <label>To Date:</label>
+            <input type="date" id="to-date">
+        </div>
+        <button onclick="getHistory()">View History</button>
+        <div id="history"></div>
+    </div>
+
+    <script>
+        function getThreshold() {
+            const userId = document.getElementById('view-user-id').value;
+            const quizType = document.getElementById('view-quiz-type').value;
+            
+            fetch(`/fln-user-threshold?user_id=${userId}&quiz_type=${quizType}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-threshold').innerHTML = 
+                        `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                })
+                .catch(error => {
+                    document.getElementById('current-threshold').innerHTML = 
+                        `<p style="color: red;">Error: ${error}</p>`;
+                });
+        }
+
+        function updateThreshold() {
+            const userId = document.getElementById('update-user-id').value;
+            const quizType = document.getElementById('update-quiz-type').value;
+            const threshold = document.getElementById('threshold').value;
+            const reason = document.getElementById('reason').value;
+            const createdBy = document.getElementById('created-by').value;
+
+            fetch('/fln-update-threshold', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    quiz_type: quizType,
+                    threshold: parseFloat(threshold),
+                    reason: reason,
+                    created_by: createdBy
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('update-result').innerHTML = 
+                    `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            })
+            .catch(error => {
+                document.getElementById('update-result').innerHTML = 
+                    `<p style="color: red;">Error: ${error}</p>`;
+            });
+        }
+
+        function getHistory() {
+            const userId = document.getElementById('history-user-id').value;
+            const quizType = document.getElementById('history-quiz-type').value;
+            const fromDate = document.getElementById('from-date').value;
+            const toDate = document.getElementById('to-date').value;
+
+            let url = `/fln-threshold-history?user_id=${userId}&quiz_type=${quizType}`;
+            if (fromDate) url += `&from_date=${fromDate}`;
+            if (toDate) url += `&to_date=${toDate}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === '0' && data.data.history.length > 0) {
+                        let table = '<table>';
+                        table += '<tr><th>Date</th><th>Old</th><th>New</th><th>Reason</th><th>Created By</th></tr>';
+                        data.data.history.forEach(entry => {
+                            table += `<tr>
+                                <td>${new Date(entry.created_at).toLocaleString()}</td>
+                                <td>${entry.old_threshold}</td>
+                                <td>${entry.new_threshold}</td>
+                                <td>${entry.reason || '-'}</td>
+                                <td>${entry.created_by || '-'}</td>
+                            </tr>`;
+                        });
+                        table += '</table>';
+                        document.getElementById('history').innerHTML = table;
+                    } else {
+                        document.getElementById('history').innerHTML = 
+                            `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('history').innerHTML = 
+                        `<p style="color: red;">Error: ${error}</p>`;
+                });
+        }
+    </script>
+</body>
+</html> 
