@@ -252,28 +252,109 @@ def fln_angaza_quizzes(request):
     """
     Get FLN Angaza quizzes
     Optional query parameters:
-    - quiz_id: Get a specific quiz by ID
+    - quiz_id: Get a specific quiz by ID (if not found, checks if it matches a lesson_id)
     - grade_id: Filter by grade
     - lesson_id: Filter by lesson
     - quiz_type: Filter by quiz type
     """
     try:
+        print("Request params:", request.GET)
+        
         # Check if requesting a specific quiz
         quiz_id = request.GET.get('quiz_id')
         if quiz_id:
+            print(f"Looking for quiz with ID: {quiz_id}")
             try:
+                # Convert quiz_id to integer
+                quiz_id = int(quiz_id)
                 quiz = models.FLNAngazaQuizzes.objects.get(id=quiz_id)
+                print(f"Found quiz: {quiz.id} - {quiz.question[:50]}...")
                 quiz_dict = format_quiz_for_response(quiz)
                 return Response({
                     'error': '0',
                     'message': 'Successful',
                     'data': [quiz_dict]  # Return as array to match existing format
                 })
-            except models.FLNAngazaQuizzes.DoesNotExist:
-                print(f'Quiz with ID {quiz_id} not found')
+            except ValueError:
+                print(f"Invalid quiz ID format: {quiz_id}")
                 return Response({
                     'error': '1',
-                    'message': f'Quiz with ID {quiz_id} not found',
+                    'message': 'Invalid quiz ID format',
+                    'data': []
+                }, status=400)
+            except models.FLNAngazaQuizzes.DoesNotExist:
+                print(f'Quiz with ID {quiz_id} not found, checking if it matches a lesson_id')
+                
+                # Check if the quiz_id matches a lesson_id
+                try:
+                    quizzes = models.FLNAngazaQuizzes.objects.filter(lesson_id=quiz_id)
+                    if quizzes.exists():
+                        print(f"Found {quizzes.count()} quizzes for lesson_id {quiz_id}")
+                        quiz_list = []
+                        for quiz in quizzes:
+                            quiz_dict = format_quiz_for_response(quiz)
+                            quiz_list.append(quiz_dict)
+                        
+                        return Response({
+                            'error': '0',
+                            'message': f'Quiz {quiz_id} not found, but found {len(quiz_list)} quizzes from lesson {quiz_id}',
+                            'data': quiz_list
+                        })
+                    
+                    print(f"No quizzes found for lesson_id {quiz_id}")
+                except Exception as e:
+                    print(f"Error checking lesson_id: {str(e)}")
+                
+                # If still no quizzes found, try to find by nearest lesson_id
+                try:
+                    # Get the quiz first to get its lesson_id
+                    quiz = models.FLNAngazaQuizzes.objects.filter(id__lt=quiz_id, lesson_id__isnull=False).order_by('-id').first()
+                    if quiz and quiz.lesson_id:
+                        print(f"Found lesson_id {quiz.lesson_id} from quiz {quiz.id}, fetching all quizzes from this lesson")
+                        quizzes = models.FLNAngazaQuizzes.objects.filter(lesson_id=quiz.lesson_id)
+                        print(f"Found {quizzes.count()} quizzes for lesson {quiz.lesson_id}")
+                        
+                        if quizzes.exists():
+                            quiz_list = []
+                            for quiz in quizzes:
+                                quiz_dict = format_quiz_for_response(quiz)
+                                quiz_list.append(quiz_dict)
+                            
+                            return Response({
+                                'error': '0',
+                                'message': f'Quiz {quiz_id} not found, but found {len(quiz_list)} quizzes from lesson {quiz.lesson_id}',
+                                'data': quiz_list
+                            })
+                    else:
+                        print("No quiz found with lesson_id")
+                except Exception as e:
+                    print(f"Error finding by lesson_id: {str(e)}")
+                
+                # If still no quizzes found, return error with available IDs and lesson_ids
+                available_ids = list(models.FLNAngazaQuizzes.objects.values_list('id', flat=True))
+                available_lesson_ids = sorted(list(models.FLNAngazaQuizzes.objects.values_list('lesson_id', flat=True).distinct()))
+                print(f'Available quiz IDs: {available_ids}')
+                print(f'Available lesson IDs: {available_lesson_ids}')
+                
+                # Get some example quizzes for each lesson_id
+                lesson_examples = {}
+                for lesson_id in available_lesson_ids:
+                    if lesson_id is not None:  # Skip None values
+                        example = models.FLNAngazaQuizzes.objects.filter(lesson_id=lesson_id).first()
+                        if example:
+                            lesson_examples[lesson_id] = {
+                                'quiz_id': example.id,
+                                'question_preview': example.question[:50] + '...' if len(example.question) > 50 else example.question
+                            }
+                
+                return Response({
+                    'error': '1',
+                    'message': f'Quiz with ID {quiz_id} not found.',
+                    'available_ids': available_ids,
+                    'available_lessons': {
+                        'lesson_ids': available_lesson_ids,
+                        'examples': lesson_examples
+                    },
                     'data': []
                 }, status=404)
         
@@ -282,16 +363,40 @@ def fln_angaza_quizzes(request):
         lesson_id = request.GET.get('lesson_id')
         quiz_type = request.GET.get('quiz_type')
         
+        print(f"Filtering quizzes - grade_id: {grade_id}, lesson_id: {lesson_id}, quiz_type: {quiz_type}")
+        
         # Start with all quizzes
         quizzes = models.FLNAngazaQuizzes.objects.all()
+        print(f"Total quizzes before filtering: {quizzes.count()}")
         
         # Apply filters if provided
         if grade_id:
-            quizzes = quizzes.filter(grade_id=grade_id)
+            try:
+                grade_id = int(grade_id)
+                quizzes = quizzes.filter(grade_id=grade_id)
+                print(f"After grade filter: {quizzes.count()} quizzes")
+            except ValueError:
+                return Response({
+                    'error': '1',
+                    'message': 'Invalid grade ID format',
+                    'data': []
+                }, status=400)
+                
         if lesson_id:
-            quizzes = quizzes.filter(lesson_id=lesson_id)
+            try:
+                lesson_id = int(lesson_id)
+                quizzes = quizzes.filter(lesson_id=lesson_id)
+                print(f"After lesson filter: {quizzes.count()} quizzes")
+            except ValueError:
+                return Response({
+                    'error': '1',
+                    'message': 'Invalid lesson ID format',
+                    'data': []
+                }, status=400)
+                
         if quiz_type:
             quizzes = quizzes.filter(quiz_type=quiz_type)
+            print(f"After quiz type filter: {quizzes.count()} quizzes")
             
         # Convert to list of dictionaries
         quiz_list = []
@@ -299,6 +404,7 @@ def fln_angaza_quizzes(request):
             quiz_dict = format_quiz_for_response(quiz)
             quiz_list.append(quiz_dict)
             
+        print(f"Returning {len(quiz_list)} quizzes")
         return Response({
             'error': '0',
             'message': 'Successful',
@@ -313,6 +419,15 @@ def fln_angaza_quizzes(request):
             'error': '1',
             'message': str(e)
         }, status=500)
+
+def get_lesson_name(lesson_id):
+    """Helper function to get lesson name based on lesson_id"""
+    lesson_names = {
+        19: "/M/, /A/, /T/",
+        20: "/E/, /S/, /L/",
+        21: "/P/, /F/, /I/"
+    }
+    return lesson_names.get(lesson_id, "Unknown Lesson")
 
 def format_quiz_for_response(quiz):
     """Helper function to format a quiz for API response"""
@@ -333,6 +448,14 @@ def format_quiz_for_response(quiz):
         }
         formatted_options.append(formatted_option)
 
+    # Add lesson information
+    lesson_info = {
+        'lesson_id': quiz.lesson_id,
+        'lesson_name': get_lesson_name(quiz.lesson_id) if quiz.lesson_id else None
+    }
+
+    print(f"Lesson info: {lesson_info}")
+
     return {
         'id': str(quiz.id),
         'question_type': quiz.question_type,
@@ -343,7 +466,8 @@ def format_quiz_for_response(quiz):
         'options': formatted_options,
         'taxonomy_tag': quiz.taxonomy_tag,
         'strand_id': quiz.strand_id,
-        'substrand_id': quiz.substrand_id
+        'substrand_id': quiz.substrand_id,
+        'lesson': lesson_info
     }
 
 @api_view(['POST'])
@@ -1058,7 +1182,9 @@ def get_user_recommendations(request):
                 'hint': q.hint,
                 'taxonomy_tag': q.taxonomy_tag,
                 'strand_id': q.strand_id,
-                'substrand_id': q.substrand_id
+                'substrand_id': q.substrand_id,
+                'lesson_id': q.lesson_id,
+                'lesson_name': get_lesson_name(q.lesson_id)
             } for q in questions]
 
             return Response({
